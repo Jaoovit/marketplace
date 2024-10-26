@@ -6,3 +6,38 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  password     String
+  email        String   @unique
+  phone        String
+  name         String
+  description  String
+  profession   String
+  profileImage String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  ads          Ads[]
+}
+
+model Ads {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  images      AdImage[]
+}
+
+model AdImage {
+  id        Int      @id @default(autoincrement())
+  imageUrl  String  
+  adId      Int
+  ad        Ads      @relation(fields: [adId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

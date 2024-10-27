@@ -1,6 +1,5 @@
 require("dotenv").config();
 const express = require("express");
-const path = require("node:path");
 const initializeSession = require("./config/session");
 
 const app = express();
@@ -9,19 +8,16 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// EJS
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "ejs");
-
+// Public
 app.use(express.static("public"));
 
 // Prisma session configuration
 initializeSession(app);
 
 // Routes
-const userRoutes = require("./routes/userRouter");
+const userRoute = require("./routes/userRouter");
 
-app.use(userRoutes);
+app.use(userRoute);
 
 const PORT = process.env.PORT || 5500;
 app.listen(PORT, () => {

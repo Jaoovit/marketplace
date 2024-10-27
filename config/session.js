@@ -10,7 +10,7 @@ const SECRET = process.env.SECRET;
 const sessionMiddleware = session({
   secret: SECRET,
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
   store: new PrismaSessionStore(prisma, {
     checkPeriod: 2 * 60 * 1000,
     dbRecordIdIsSessionId: true,

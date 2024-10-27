@@ -15,7 +15,7 @@ app.use(express.static("public"));
 initializeSession(app);
 
 // Routes
-const userRoute = require("./routes/userRouter");
+const userRoute = require("./routes/userRoute");
 
 app.use(userRoute);
 

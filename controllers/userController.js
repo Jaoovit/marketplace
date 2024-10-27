@@ -2,6 +2,9 @@ const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
 const passport = require("../config/passport");
 const prisma = new PrismaClient();
+const jwt = require("jsonwebtoken");
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const registerUser = async (req, res) => {
   try {
@@ -11,7 +14,7 @@ const registerUser = async (req, res) => {
       password,
       confPassword,
       email,
-      phoneNumber,
+      phone,
       profession,
       description,
       profileImage,
@@ -30,8 +33,9 @@ const registerUser = async (req, res) => {
         email,
         password: hashedPassword,
         name,
-        phoneNumber,
+        phone,
         profession,
+        location,
         description,
         profileImage,
       },
@@ -40,6 +44,7 @@ const registerUser = async (req, res) => {
       .status(200)
       .json({ message: "user created sucessfully", user: newUser });
   } catch (error) {
+    console.error("Error details:", error);
     res.status(500).send("Error registering user");
   }
 };
@@ -50,16 +55,36 @@ const loginUser = (req, res, next) => {
       return next(err);
     }
     if (!user) {
-      return res.status(401).json({ error: info.message });
+      return res
+        .status(401)
+        .json({ error: "Authentication failed", message: info.message });
     }
-    req.logIn(user, (err) => {
+    req.logIn(user, async (err) => {
       if (err) {
-        return next(err);
+        return res
+          .status(500)
+          .json({ error: "Login failed, please try again" });
       }
 
-      req.session.userInfo = req.user;
+      const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
+        expiresIn: "1h",
+      });
 
-      return res.status(200).json({ message: "Login sucessfully" });
+      return res.status(200).json({
+        message: "Login successful",
+        token: token,
+        user: {
+          id: user.id,
+          username: user.username,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          profession: user.profession,
+          location: user.location,
+          description: user.description,
+          profileImage: user.profileImage,
+        },
+      });
     });
   })(req, res, next);
 };
@@ -74,9 +99,86 @@ const logoutUser = (req, res, next) => {
         return next(err);
       }
       res.clearCookie("connect.sid");
-      return res.status(200).json({ message: "logout sucessfully" });
+      return res.status(200).json({ message: "Logout sucessfully" });
     });
   });
 };
 
-module.exports = { registerUser, loginUser, logoutUser };
+const updateDescription = async (req, res) => {
+  try {
+    const { newDescription } = req.body;
+    const userId = req.session.passport.user;
+
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        description: newDescription,
+      },
+    });
+    return res.status(200).json({
+      message: "description updated sucessfully",
+      updatedDescription: updatedUser.description,
+    });
+  } catch (error) {
+    console.error("Error details:", error);
+    res.status(500).send("Error updating description");
+  }
+};
+
+const updateProfileImage = async (req, res) => {
+  try {
+    const { newProfileImage } = req.body;
+    const userId = req.session.passport.user;
+
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        profileImage: newProfileImage,
+      },
+    });
+
+    return res.status(200).json({
+      message: "profile image updated sucessfully",
+      updatedProfileImage: updatedUser.profileImage,
+    });
+  } catch (error) {
+    console.error("Error details:", error);
+    res.status(500).send("Error updating profile photo");
+  }
+};
+
+const updateLocation = async (req, res) => {
+  try {
+    const { newLocation } = req.body;
+    const userId = req.session.passport.user;
+
+    const updateUser = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        location: newLocation,
+      },
+    });
+    res.status(200).json({
+      message: "Location updated sucessfully",
+      updatedLocation: updateUser.location,
+    });
+  } catch (error) {
+    console.error("Error details:", error);
+    res.status(500).send("Error updating location");
+  }
+};
+
+module.exports = {
+  registerUser,
+  loginUser,
+  logoutUser,
+  updateDescription,
+  updateProfileImage,
+  updateLocation,
+};

@@ -8,9 +8,6 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Public
-app.use(express.static("public"));
-
 // Prisma session configuration
 initializeSession(app);
 

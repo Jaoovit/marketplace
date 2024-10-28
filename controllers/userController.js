@@ -16,6 +16,7 @@ const registerUser = async (req, res) => {
       email,
       phone,
       profession,
+      location,
       description,
       profileImage,
     } = req.body;
@@ -107,7 +108,22 @@ const logoutUser = (req, res, next) => {
 const updateDescription = async (req, res) => {
   try {
     const { newDescription } = req.body;
-    const userId = req.session.passport.user;
+    const userId = req.session.passport?.user;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID not found in session" });
+    }
+    if (!newDescription) {
+      return res.status(400).json({ message: "New description is required" });
+    }
+
+    const userExists = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!userExists) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     const updatedUser = await prisma.user.update({
       where: {
@@ -117,8 +133,9 @@ const updateDescription = async (req, res) => {
         description: newDescription,
       },
     });
+
     return res.status(200).json({
-      message: "description updated sucessfully",
+      message: "Description updated successfully",
       updatedDescription: updatedUser.description,
     });
   } catch (error) {
@@ -132,6 +149,21 @@ const updateProfileImage = async (req, res) => {
     const { newProfileImage } = req.body;
     const userId = req.session.passport.user;
 
+    if (!userId) {
+      return res.status(400).json({ message: "User ID not found in session" });
+    }
+    if (!newProfileImage) {
+      return res.status(400).json({ message: "New profile image is required" });
+    }
+
+    const userExists = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!userExists) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     const updatedUser = await prisma.user.update({
       where: {
         id: userId,
@@ -142,12 +174,12 @@ const updateProfileImage = async (req, res) => {
     });
 
     return res.status(200).json({
-      message: "profile image updated sucessfully",
+      message: "Profile image updated sucessfully",
       updatedProfileImage: updatedUser.profileImage,
     });
   } catch (error) {
     console.error("Error details:", error);
-    res.status(500).send("Error updating profile photo");
+    res.status(500).send("Error updating profile image");
   }
 };
 
@@ -155,6 +187,22 @@ const updateLocation = async (req, res) => {
   try {
     const { newLocation } = req.body;
     const userId = req.session.passport.user;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID not found in session" });
+    }
+
+    if (!newLocation) {
+      return res.status(400).json({ message: "New location is required" });
+    }
+
+    const userExists = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!userExists) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     const updateUser = await prisma.user.update({
       where: {

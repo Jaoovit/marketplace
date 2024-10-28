@@ -6,5 +6,6 @@ const verifyToken = require("../config/token");
 // Get
 router.get("/advertisements", adsController.getAllAds);
 router.get("/advertisement/:id", adsController.getAdById);
+router.get("/search", adsController.searchAds);
 
 module.exports = router;

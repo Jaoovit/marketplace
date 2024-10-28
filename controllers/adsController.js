@@ -10,14 +10,13 @@ const getAllAds = async (req, res) => {
     });
   } catch (error) {
     console.error("Error details:", error);
-    res.status(500).send("Error getting advertisements");
+    return res.status(500).send("Error getting advertisements");
   }
 };
 
 const getAdById = async (req, res) => {
+  const adId = parseInt(req.params.id, 10);
   try {
-    const adId = parseInt(req.params.id, 10);
-
     if (isNaN(adId)) {
       return res.status(400).send("Invalid advertisement id");
     }
@@ -38,7 +37,35 @@ const getAdById = async (req, res) => {
     });
   } catch (error) {
     console.error("Error details:", error);
-    res.status(500).send("Error getting advertisement by Id");
+    return res.status(500).send(`Error getting advertisement ${adId}`);
+  }
+};
+
+const getAdsByUser = async (req, res) => {
+  const userId = req.session.passport?.user;
+  try {
+    if (!userId) {
+      return res.status(400).send({ message: "User ID not found in session" });
+    }
+
+    const userExists = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!userExists) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const advertisements = await prisma.ads.findMany({
+      where: { userId: userId },
+    });
+    return res.status(200).json({
+      message: `User ${userId}'s advertisements gotted sucessfully`,
+      advertisements: advertisements,
+    });
+  } catch (error) {
+    console.error("Error details:", error);
+    return res.status(500).send("Error getting advertisements by user");
   }
 };
 
@@ -69,8 +96,8 @@ const searchAds = async (req, res) => {
     });
   } catch (error) {
     console.error("Error details:", error);
-    res.status(500).send("Error searching advertisements");
+    return res.status(500).send("Error searching advertisements");
   }
 };
 
-module.exports = { getAllAds, getAdById, searchAds };
+module.exports = { getAllAds, getAdById, getAdsByUser, searchAds };

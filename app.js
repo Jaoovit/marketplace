@@ -13,8 +13,10 @@ initializeSession(app);
 
 // Routes
 const userRoute = require("./routes/userRoute");
+const adsRoute = require("./routes/adsRoute");
 
 app.use(userRoute);
+app.use(adsRoute);
 
 const PORT = process.env.PORT || 5500;
 app.listen(PORT, () => {

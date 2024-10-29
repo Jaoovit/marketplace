@@ -1,5 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const cloudinary = require("../config/cloudinary");
 
 const getAllAds = async (req, res) => {
   try {
@@ -45,7 +46,7 @@ const getAdsByUser = async (req, res) => {
   const userId = req.session.passport?.user;
   try {
     if (!userId) {
-      return res.status(400).send({ message: "User ID not found in session" });
+      return res.status(400).send({ message: "User ID not found" });
     }
 
     const userExists = await prisma.user.findUnique({
@@ -100,4 +101,67 @@ const searchAds = async (req, res) => {
   }
 };
 
-module.exports = { getAllAds, getAdById, getAdsByUser, searchAds };
+const postAd = async (req, res) => {
+  try {
+    const { title, description } = req.body;
+    const images = req.files;
+
+    if (!title || !description) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const userId = req.session.passport?.user || 6;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID not found" });
+    }
+
+    if (!images || images.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "At least one image is required." });
+    }
+
+    let imageUrls = [];
+    const uploadPromises = images.map((image) => {
+      return new Promise((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream({ resource_type: "image" }, (error, result) => {
+            if (error) {
+              return reject(error);
+            }
+            resolve(result.secure_url);
+          })
+          .end(image.buffer);
+      });
+    });
+
+    imageUrls = await Promise.all(uploadPromises);
+
+    const newAdvertisement = await prisma.ads.create({
+      data: {
+        title: title,
+        description: description,
+        userId: userId,
+        images: {
+          create: imageUrls.map((imageUrl) => ({ imageUrl })),
+        },
+      },
+    });
+
+    const createdAdWithImages = await prisma.ads.findUnique({
+      where: { id: newAdvertisement.id },
+      include: { images: true },
+    });
+
+    return res.status(200).json({
+      message: "Advertisement created successfully",
+      newAdvertisement: createdAdWithImages,
+    });
+  } catch (error) {
+    console.error("Error details:", error);
+    return res.status(500).json({ message: "Error creating advertisement" });
+  }
+};
+
+module.exports = { getAllAds, getAdById, getAdsByUser, searchAds, postAd };

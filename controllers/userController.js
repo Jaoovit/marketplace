@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const passport = require("../config/passport");
 const prisma = new PrismaClient();
 const jwt = require("jsonwebtoken");
+const cloudinary = require("../config/cloudinary");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -18,14 +19,40 @@ const registerUser = async (req, res) => {
       profession,
       location,
       description,
-      profileImage,
     } = req.body;
 
+    if (!username || !name || !password || !confPassword || !email) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
     if (password !== confPassword) {
-      throw new Error("Password must match password confirmation");
+      return res
+        .status(400)
+        .json({ message: "Password must match password confirmation" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    let profileImageUrl = null;
+
+    if (req.file) {
+      try {
+        const uploadResult = await new Promise((resolve, reject) => {
+          cloudinary.uploader
+            .upload_stream({ resource_type: "auto" }, (error, result) => {
+              if (error) return reject(error);
+              resolve(result);
+            })
+            .end(req.file.buffer);
+        });
+        profileImageUrl = uploadResult.secure_url;
+      } catch (cloudinaryError) {
+        console.error("Cloudinary upload error:", cloudinaryError);
+        return res
+          .status(400)
+          .json({ message: "Failed to upload image", error: cloudinaryError });
+      }
+    }
 
     const newUser = await prisma.user.create({
       data: {
@@ -33,17 +60,17 @@ const registerUser = async (req, res) => {
         name,
         email,
         password: hashedPassword,
-        name,
         phone,
         profession,
         location,
         description,
-        profileImage,
+        profileImage: profileImageUrl,
       },
     });
+
     res
       .status(200)
-      .json({ message: "user created sucessfully", user: newUser });
+      .json({ message: "User created successfully", user: newUser });
   } catch (error) {
     console.error("Error details:", error);
     res.status(500).send("Error registering user");
@@ -146,13 +173,13 @@ const updateDescription = async (req, res) => {
 
 const updateProfileImage = async (req, res) => {
   try {
-    const { newProfileImage } = req.body;
     const userId = req.session.passport.user;
 
     if (!userId) {
       return res.status(400).json({ message: "User ID not found in session" });
     }
-    if (!newProfileImage) {
+
+    if (!req.file) {
       return res.status(400).json({ message: "New profile image is required" });
     }
 
@@ -164,17 +191,36 @@ const updateProfileImage = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    let profileImageUrl = null;
+
+    try {
+      const uploadResult = await new Promise((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream({ resource_type: "auto" }, (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          })
+          .end(req.file.buffer);
+      });
+      profileImageUrl = uploadResult.secure_url;
+    } catch (cloudinaryError) {
+      console.error("Cloudinary upload error:", cloudinaryError);
+      return res
+        .status(400)
+        .json({ message: "Failed to upload image", error: cloudinaryError });
+    }
+
     const updatedUser = await prisma.user.update({
       where: {
         id: userId,
       },
       data: {
-        profileImage: newProfileImage,
+        profileImage: profileImageUrl,
       },
     });
 
     return res.status(200).json({
-      message: "Profile image updated sucessfully",
+      message: "Profile image updated successfully",
       updatedProfileImage: updatedUser.profileImage,
     });
   } catch (error) {

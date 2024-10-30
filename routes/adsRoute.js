@@ -15,9 +15,12 @@ router.get("/user/advertisements", verifyToken, adsController.getAdsByUser);
 // Post
 router.post(
   "/advertisement",
-  //verifyToken,
+  verifyToken,
   upload.array("images"),
   adsController.postAd
 );
+
+// Delete
+router.delete("/advertisement/:adId", adsController.deleteAdById);
 
 module.exports = router;

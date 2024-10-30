@@ -110,16 +110,10 @@ const postAd = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    const userId = req.session.passport?.user || 6;
+    const userId = req.session.passport?.user;
 
     if (!userId) {
       return res.status(400).json({ message: "User ID not found" });
-    }
-
-    if (!images || images.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "At least one image is required." });
     }
 
     let imageUrls = [];
@@ -164,4 +158,46 @@ const postAd = async (req, res) => {
   }
 };
 
-module.exports = { getAllAds, getAdById, getAdsByUser, searchAds, postAd };
+const deleteAdById = async (req, res) => {
+  const adId = parseInt(req.params.adId);
+
+  try {
+    const userId = req.session.passport?.user;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID not found" });
+    }
+
+    await prisma.$transaction(async (prisma) => {
+      await prisma.adImage.deleteMany({
+        where: {
+          adId: adId,
+        },
+      });
+
+      await prisma.ads.delete({
+        where: {
+          id: adId,
+          userId: userId,
+        },
+      });
+    });
+    return res
+      .status(200)
+      .json({ message: `Advertisement ${adId} deleted sucessfully` });
+  } catch (error) {
+    console.error("Error details:", error);
+    return res
+      .status(500)
+      .json({ message: `Error deleting advertisement ${adId}` });
+  }
+};
+
+module.exports = {
+  getAllAds,
+  getAdById,
+  getAdsByUser,
+  searchAds,
+  postAd,
+  deleteAdById,
+};

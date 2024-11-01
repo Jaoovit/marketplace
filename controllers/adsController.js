@@ -158,8 +158,58 @@ const postAd = async (req, res) => {
   }
 };
 
+const updateAdTitle = async (req, res) => {
+  const adId = parseInt(req.params.adId, 10);
+
+  if (!adId) {
+    return res
+      .status(400)
+      .json({ message: `Advertisement ID ${adId} not found` });
+  }
+
+  const { newTitle } = req.body;
+
+  if (!newTitle) {
+    return res.status(400).json({ message: "New title is required" });
+  }
+
+  const userId = req.session.passport?.user;
+
+  if (!userId) {
+    return res.status(400).json({ message: "User ID not found" });
+  }
+
+  try {
+    const updatedAd = await prisma.ads.update({
+      where: {
+        id: adId,
+        userId: userId,
+      },
+      data: {
+        title: newTitle,
+      },
+    });
+
+    return res.status(200).json({
+      message: `Advertisement ${adId} title updated sucessfully`,
+      updatedLocation: updatedAd.title,
+    });
+  } catch (error) {
+    console.error("Error details:", error);
+    return res
+      .status(500)
+      .json({ message: `Error updating advertisement ${adId} title` });
+  }
+};
+
 const deleteAdById = async (req, res) => {
   const adId = parseInt(req.params.adId);
+
+  if (!adId) {
+    return res
+      .status(400)
+      .json({ message: `Advertisement ID ${adId} not found` });
+  }
 
   try {
     const userId = req.session.passport?.user;
@@ -240,6 +290,7 @@ module.exports = {
   getAdsByUser,
   searchAds,
   postAd,
+  updateAdTitle,
   deleteAdById,
   deleteAdByUser,
 };

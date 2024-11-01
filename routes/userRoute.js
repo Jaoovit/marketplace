@@ -16,13 +16,13 @@ router.post("/login", userController.loginUser);
 router.post("/logout", userController.logoutUser);
 
 // Put
-router.put("/description", verifyToken, userController.updateDescription);
+router.put("/description", verifyToken, userController.updateUserDescription);
 router.put(
   "/profileImage",
   verifyToken,
   upload.single("profileImage"),
-  userController.updateProfileImage
+  userController.updateUserProfileImage
 );
-router.put("/location", verifyToken, userController.updateLocation);
+router.put("/location", verifyToken, userController.updateUserLocation);
 
 module.exports = router;

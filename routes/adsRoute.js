@@ -20,6 +20,9 @@ router.post(
   adsController.postAd
 );
 
+// Put
+router.put("/advertisement/:adId", verifyToken, adsController.updateAdTitle);
+
 // Delete
 router.delete("/advertisement/:adId", verifyToken, adsController.deleteAdById);
 router.delete("/advertisements", verifyToken, adsController.deleteAdByUser);

@@ -132,7 +132,7 @@ const logoutUser = (req, res, next) => {
   });
 };
 
-const updateDescription = async (req, res) => {
+const updateUserDescription = async (req, res) => {
   try {
     const { newDescription } = req.body;
     const userId = req.session.passport?.user;
@@ -171,9 +171,9 @@ const updateDescription = async (req, res) => {
   }
 };
 
-const updateProfileImage = async (req, res) => {
+const updateUserProfileImage = async (req, res) => {
   try {
-    const userId = req.session.passport.user;
+    const userId = req.session.passport?.user;
 
     if (!userId) {
       return res.status(400).json({ message: "User ID not found in session" });
@@ -229,17 +229,18 @@ const updateProfileImage = async (req, res) => {
   }
 };
 
-const updateLocation = async (req, res) => {
+const updateUserLocation = async (req, res) => {
   try {
     const { newLocation } = req.body;
-    const userId = req.session.passport.user;
-
-    if (!userId) {
-      return res.status(400).json({ message: "User ID not found in session" });
-    }
 
     if (!newLocation) {
       return res.status(400).json({ message: "New location is required" });
+    }
+
+    const userId = req.session.passport?.user;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID not found in session" });
     }
 
     const userExists = await prisma.user.findUnique({
@@ -272,7 +273,7 @@ module.exports = {
   registerUser,
   loginUser,
   logoutUser,
-  updateDescription,
-  updateProfileImage,
-  updateLocation,
+  updateUserDescription,
+  updateUserProfileImage,
+  updateUserLocation,
 };

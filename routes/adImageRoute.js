@@ -6,4 +6,7 @@ const verifyToken = require("../config/token");
 
 const upload = multer({ storage: multer.memoryStorage() });
 
+// Delete
+router.delete("/adImage/:id", adImageController.deleteImageById);
+
 module.exports = router;

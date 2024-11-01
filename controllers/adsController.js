@@ -19,7 +19,7 @@ const getAdById = async (req, res) => {
   const adId = parseInt(req.params.id, 10);
   try {
     if (isNaN(adId)) {
-      return res.status(400).send("Invalid advertisement id");
+      return res.status(400).send({ message: "Invalid advertisement id" });
     }
 
     const advertisement = await prisma.ads.findUnique({
@@ -43,10 +43,10 @@ const getAdById = async (req, res) => {
 };
 
 const getAdsByUser = async (req, res) => {
-  const userId = req.session.passport?.user;
+  const userId = parseInt(req.params.id, 10);
   try {
-    if (!userId) {
-      return res.status(400).send({ message: "User ID not found" });
+    if (isNaN(userId)) {
+      return res.status(400).send({ message: "Invalid user id" });
     }
 
     const userExists = await prisma.user.findUnique({

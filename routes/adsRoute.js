@@ -10,7 +10,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 router.get("/advertisements", adsController.getAllAds);
 router.get("/advertisement/:id", adsController.getAdById);
 router.get("/search", adsController.searchAds);
-router.get("/user/advertisements", verifyToken, adsController.getAdsByUser);
+router.get("/user/:id/advertisements", adsController.getAdsByUser);
 
 // Post
 router.post(

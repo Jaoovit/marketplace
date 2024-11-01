@@ -22,18 +22,18 @@ router.post(
 
 // Put
 router.put(
-  "/advertisement/title/:adId",
+  "/advertisement/title/:id",
   verifyToken,
   adsController.updateAdTitle
 );
 router.put(
-  "/advertisement/description/:adId",
+  "/advertisement/description/:id",
   verifyToken,
   adsController.updateAdDescription
 );
 
 // Delete
-router.delete("/advertisement/:adId", verifyToken, adsController.deleteAdById);
+router.delete("/advertisement/:id", verifyToken, adsController.deleteAdById);
 router.delete("/advertisements", verifyToken, adsController.deleteAdByUser);
 
 module.exports = router;

@@ -159,7 +159,7 @@ const postAd = async (req, res) => {
 };
 
 const updateAdTitle = async (req, res) => {
-  const adId = parseInt(req.params.adId, 10);
+  const adId = parseInt(req.params.id, 10);
 
   if (!adId) {
     return res
@@ -203,7 +203,7 @@ const updateAdTitle = async (req, res) => {
 };
 
 const updateAdDescription = async (req, res) => {
-  const adId = parseInt(req.params.adId, 10);
+  const adId = parseInt(req.params.id, 10);
 
   if (!adId) {
     return res
@@ -247,7 +247,7 @@ const updateAdDescription = async (req, res) => {
 };
 
 const deleteAdById = async (req, res) => {
-  const adId = parseInt(req.params.adId);
+  const adId = parseInt(req.params.id);
 
   if (!adId) {
     return res

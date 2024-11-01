@@ -7,6 +7,18 @@ const cloudinary = require("../config/cloudinary");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await prisma.user.findMany();
+    return res
+      .status(200)
+      .json({ message: "Users gotted sucessfully", users: users });
+  } catch (error) {
+    console.error("Error details:", error);
+    return res.status(500).json({ message: "Error getting users" });
+  }
+};
+
 const registerUser = async (req, res) => {
   try {
     const {
@@ -270,6 +282,7 @@ const updateUserLocation = async (req, res) => {
 };
 
 module.exports = {
+  getAllUsers,
   registerUser,
   loginUser,
   logoutUser,

@@ -6,6 +6,9 @@ const verifyToken = require("../config/token");
 
 const upload = multer({ storage: multer.memoryStorage() });
 
+// Get
+router.get("/users", userController.getAllUsers);
+
 // Post
 router.post(
   "/register",

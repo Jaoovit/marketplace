@@ -193,6 +193,47 @@ const deleteAdById = async (req, res) => {
   }
 };
 
+const deleteAdByUser = async (req, res) => {
+  const userId = req.session.passport?.user;
+
+  if (!userId) {
+    return res.status(400).json({ message: `User ID ${userId} not found` });
+  }
+
+  try {
+    await prisma.$transaction(async (prisma) => {
+      const ads = await prisma.ads.findMany({
+        where: { userId: userId },
+        select: { id: true },
+      });
+
+      const adIds = ads.map((ad) => ad.id);
+
+      if (adIds.length > 0) {
+        await prisma.adImage.deleteMany({
+          where: {
+            adId: { in: adIds },
+          },
+        });
+
+        await prisma.ads.deleteMany({
+          where: {
+            id: { in: adIds },
+          },
+        });
+      }
+    });
+    res
+      .status(200)
+      .json({ message: `Advertisements deleted for user ${userId}` });
+  } catch (error) {
+    console.error("Error details", error);
+    return res
+      .status(500)
+      .json({ message: `Error deleting advertisement by user ${userId}` });
+  }
+};
+
 module.exports = {
   getAllAds,
   getAdById,
@@ -200,4 +241,5 @@ module.exports = {
   searchAds,
   postAd,
   deleteAdById,
+  deleteAdByUser,
 };

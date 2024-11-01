@@ -21,6 +21,7 @@ router.post(
 );
 
 // Delete
-router.delete("/advertisement/:adId", adsController.deleteAdById);
+router.delete("/advertisement/:adId", verifyToken, adsController.deleteAdById);
+router.delete("/advertisements", verifyToken, adsController.deleteAdByUser);
 
 module.exports = router;

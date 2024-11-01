@@ -4,7 +4,11 @@ const cloudinary = require("../config/cloudinary");
 
 const getAllAds = async (req, res) => {
   try {
-    const advertisements = await prisma.ads.findMany();
+    const advertisements = await prisma.ads.findMany({
+      include: {
+        images: true,
+      },
+    });
     return res.status(200).json({
       message: "Advertisements gotted sucessfully",
       advertisements: advertisements,
@@ -25,6 +29,9 @@ const getAdById = async (req, res) => {
     const advertisement = await prisma.ads.findUnique({
       where: {
         id: adId,
+      },
+      include: {
+        images: true,
       },
     });
 
@@ -59,6 +66,9 @@ const getAdsByUser = async (req, res) => {
 
     const advertisements = await prisma.ads.findMany({
       where: { userId: userId },
+      include: {
+        images: true,
+      },
     });
     return res.status(200).json({
       message: `User ${userId}'s advertisements gotted sucessfully`,

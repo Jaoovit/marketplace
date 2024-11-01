@@ -21,7 +21,16 @@ router.post(
 );
 
 // Put
-router.put("/advertisement/:adId", verifyToken, adsController.updateAdTitle);
+router.put(
+  "/advertisement/title/:adId",
+  verifyToken,
+  adsController.updateAdTitle
+);
+router.put(
+  "/advertisement/description/:adId",
+  verifyToken,
+  adsController.updateAdDescription
+);
 
 // Delete
 router.delete("/advertisement/:adId", verifyToken, adsController.deleteAdById);

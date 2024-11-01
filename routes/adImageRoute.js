@@ -6,6 +6,14 @@ const verifyToken = require("../config/token");
 
 const upload = multer({ storage: multer.memoryStorage() });
 
+// Post
+router.post(
+  "/advertisement/:id/images",
+  verifyToken,
+  upload.single("image"),
+  adImageController.addImagetoAd
+);
+
 // Put
 router.put(
   "/advertisement/image/:id",

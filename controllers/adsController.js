@@ -318,6 +318,14 @@ const deleteAdByUser = async (req, res) => {
     return res.status(400).json({ message: `User ID ${userId} not found` });
   }
 
+  const userExists = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!userExists) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
   try {
     await prisma.$transaction(async (prisma) => {
       const ads = await prisma.ads.findMany({

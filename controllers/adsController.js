@@ -180,6 +180,14 @@ const updateAdTitle = async (req, res) => {
       return res.status(400).json({ message: "User ID not found" });
     }
 
+    const userExists = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!userExists) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     const updatedAd = await prisma.ads.update({
       where: {
         id: adId,
@@ -224,6 +232,14 @@ const updateAdDescription = async (req, res) => {
       return res.status(400).json({ message: "User ID not found" });
     }
 
+    const userExists = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!userExists) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     const updatedAd = await prisma.ads.update({
       where: {
         id: adId,
@@ -260,6 +276,14 @@ const deleteAdById = async (req, res) => {
 
     if (!userId) {
       return res.status(400).json({ message: "User ID not found" });
+    }
+
+    const userExists = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!userExists) {
+      return res.status(404).json({ message: "User not found" });
     }
 
     await prisma.$transaction(async (prisma) => {

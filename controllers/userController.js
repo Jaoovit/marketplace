@@ -172,13 +172,15 @@ const logoutUser = (req, res, next) => {
 const updateUserDescription = async (req, res) => {
   try {
     const { newDescription } = req.body;
+
+    if (!newDescription) {
+      return res.status(400).json({ message: "New description is required" });
+    }
+
     const userId = req.session.passport?.user;
 
     if (!userId) {
       return res.status(400).json({ message: "User ID not found in session" });
-    }
-    if (!newDescription) {
-      return res.status(400).json({ message: "New description is required" });
     }
 
     const userExists = await prisma.user.findUnique({
@@ -216,16 +218,16 @@ const updateUserProfileImage = async (req, res) => {
       return res.status(400).json({ message: "User ID not found in session" });
     }
 
-    if (!req.file) {
-      return res.status(400).json({ message: "New profile image is required" });
-    }
-
     const userExists = await prisma.user.findUnique({
       where: { id: userId },
     });
 
     if (!userExists) {
       return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ message: "New profile image is required" });
     }
 
     let profileImageUrl = null;

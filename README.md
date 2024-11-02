@@ -55,6 +55,8 @@ A RESTful API for managing an online marketplace, built with Node.js and Prisma 
     - CLOUDINARY_API_KEY=
     - CLOUDINARY_API_SECRET=
 
+5. Config corsOptions for your frontend application domain
+
 ## 🏃‍➡️ Start
 
 - **Run commands:**

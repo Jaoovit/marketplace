@@ -1,17 +1,17 @@
 <p>&nbsp;</p>
-<h1 align="center">🗂️ File-uploader</h1>
+<h1 align="center">📣 Marketplace API</h1>
 <p>&nbsp;</p>
 
 ## 📖 Description
 
-This application provides a user-friendly interface for uploading files directly to the cloud. It manages user sessions and file operations, making it suitable for projects requiring robust file handling capabilities.
+A RESTful API for managing an online marketplace, built with Node.js and Prisma ORM. This API provides functionality to handle product listings, user authentication, orders, and more.
 
 ## 💡 Features
 
-- **File Upload**: Securely upload files to Cloudinary.
-- **File Management**: Organize, retrieve and share uploaded files easily.
-- **User Authentication**: Manage user sessions for secure access.
-- **Database Integration**: Utilize Prisma ORM for efficient database interactions.
+- **User Authentication**: Register, login,  and manage sessions.
+- **User Information handler**: Update user informations.
+- **Advertisement Management**: Create, update, delete, and view advertisements.
+- **Database Integration**: Built using Prisma ORM for database management.
 
 ## 🔨 Tools
 
@@ -19,7 +19,6 @@ This application provides a user-friendly interface for uploading files directly
 - **Express**: Framework for building the API.
 - **PostgreSQL**: Relational database for data persistence.
 - **Prisma**: ORM for database schema and queries.
-- **Cloudinary**: Service for file storage and management.
 
 ## ⚙️ Setup
 
@@ -33,9 +32,9 @@ This application provides a user-friendly interface for uploading files directly
 - **Clone the repository:**
 
    ```bash
-   git clone https://github.com/Jaoovit/file-uploader.git
-
-   cd file-uploader
+   git clone https://github.com/Jaoovit/marketplace-api.git
+   
+   cd marketplace-api
 1. Update the name of the .env_template to .env
 
 2. Define .env variables:

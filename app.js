@@ -6,18 +6,16 @@ const app = express();
 
 const cors = require("cors");
 
-/*
-Cors options example
+const PRODUCTION_URL = process.env.PRODUCTION_URL;
 
 const corsOptions = {
-  origin: "https://your-allowed-domain.com",
+  origin: PRODUCTION_URL,
   methods: "GET,POST, PUT, DELETE, PATCH",
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 };
-*/
 
-app.use(cors(/*corsOptions*/));
+app.use(cors(corsOptions));
 
 // Middleware to parte JSON and URL-encoded data
 app.use(express.json());

@@ -14,7 +14,7 @@ router.get("/user/:id/advertisements", adsController.getAdsByUser);
 
 // Post
 router.post(
-  "/advertisement",
+  "/advertisement/:id",
   verifyToken,
   upload.array("images"),
   adsController.postAd

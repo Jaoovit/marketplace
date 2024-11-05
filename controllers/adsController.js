@@ -112,18 +112,25 @@ const searchAds = async (req, res) => {
 };
 
 const postAd = async (req, res) => {
+  const userId = parseInt(req.params.id, 10);
   try {
+    if (isNaN(userId)) {
+      return res.status(400).send({ message: "Invalid user id" });
+    }
+
+    const userExists = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!userExists) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     const { title, description } = req.body;
     const images = req.files;
 
     if (!title || !description) {
       return res.status(400).json({ message: "All fields are required" });
-    }
-
-    const userId = req.session.passport?.user;
-
-    if (!userId) {
-      return res.status(400).json({ message: "User ID not found" });
     }
 
     let imageUrls = [];

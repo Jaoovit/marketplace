@@ -191,10 +191,10 @@ const updateAdTitle = async (req, res) => {
       return res.status(400).json({ message: "New title is required" });
     }
 
-    const userId = req.session.passport?.user;
+    const userId = parseInt(req.params.userId, 10);
 
-    if (!userId) {
-      return res.status(400).json({ message: "User ID not found" });
+    if (isNaN(userId)) {
+      return res.status(400).send({ message: "Invalid user id" });
     }
 
     const userExists = await prisma.user.findUnique({
@@ -243,10 +243,10 @@ const updateAdDescription = async (req, res) => {
       return res.status(400).json({ message: "New description is required" });
     }
 
-    const userId = req.session.passport?.user;
+    const userId = parseInt(req.params.userId, 10);
 
-    if (!userId) {
-      return res.status(400).json({ message: "User ID not found" });
+    if (isNaN(userId)) {
+      return res.status(400).send({ message: "Invalid user id" });
     }
 
     const userExists = await prisma.user.findUnique({
@@ -289,10 +289,10 @@ const deleteAdById = async (req, res) => {
   }
 
   try {
-    const userId = req.session.passport?.user;
+    const userId = parseInt(req.params.userId, 10);
 
-    if (!userId) {
-      return res.status(400).json({ message: "User ID not found" });
+    if (isNaN(userId)) {
+      return res.status(400).send({ message: "Invalid user id" });
     }
 
     const userExists = await prisma.user.findUnique({
@@ -329,10 +329,10 @@ const deleteAdById = async (req, res) => {
 };
 
 const deleteAdByUser = async (req, res) => {
-  const userId = req.session.passport?.user;
+  const userId = parseInt(req.params.userId, 10);
 
-  if (!userId) {
-    return res.status(400).json({ message: `User ID ${userId} not found` });
+  if (isNaN(userId)) {
+    return res.status(400).send({ message: "Invalid user id" });
   }
 
   const userExists = await prisma.user.findUnique({

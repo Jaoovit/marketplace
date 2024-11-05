@@ -3,10 +3,18 @@ const prisma = new PrismaClient();
 const cloudinary = require("../config/cloudinary");
 
 const addImagetoAd = async (req, res) => {
-  const userId = req.session.passport?.user;
+  const userId = parseInt(req.params.userId, 10);
 
-  if (!userId) {
-    return res.status(400).json({ message: "User ID not found" });
+  if (isNaN(userId)) {
+    return res.status(400).send({ message: "Invalid user id" });
+  }
+
+  const userExists = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!userExists) {
+    return res.status(404).json({ message: "User not found" });
   }
 
   const adId = parseInt(req.params.id, 10);
@@ -77,11 +85,20 @@ const addImagetoAd = async (req, res) => {
 };
 
 const updateImageById = async (req, res) => {
-  const userId = req.session.passport?.user;
+  const userId = parseInt(req.params.userId, 10);
 
-  if (!userId) {
-    return res.status(400).json({ message: `User ID ${userId} not found` });
+  if (isNaN(userId)) {
+    return res.status(400).send({ message: "Invalid user id" });
   }
+
+  const userExists = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!userExists) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
   const imageId = parseInt(req.params.id, 10);
 
   if (isNaN(imageId)) {
@@ -152,11 +169,20 @@ const updateImageById = async (req, res) => {
 };
 
 const deleteImageById = async (req, res) => {
-  const userId = req.session.passport?.user;
+  const userId = parseInt(req.params.userId, 10);
 
-  if (!userId) {
-    return res.status(400).json({ message: `User ID ${userId} not found` });
+  if (isNaN(userId)) {
+    return res.status(400).send({ message: "Invalid user id" });
   }
+
+  const userExists = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!userExists) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
   const imageId = parseInt(req.params.id, 10);
 
   if (isNaN(imageId)) {

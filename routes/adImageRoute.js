@@ -8,7 +8,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 // Post
 router.post(
-  "/advertisement/:id/images",
+  "/advertisement/:id/images/:userId",
   verifyToken,
   upload.single("image"),
   adImageController.addImagetoAd
@@ -16,7 +16,7 @@ router.post(
 
 // Put
 router.put(
-  "/advertisement/image/:id",
+  "/advertisement/image/:id/:userId",
   verifyToken,
   upload.single("image"),
   adImageController.updateImageById
@@ -24,7 +24,7 @@ router.put(
 
 // Delete
 router.delete(
-  "/advertisement/image/:id",
+  "/advertisement/image/:id/:userId",
   verifyToken,
   adImageController.deleteImageById
 );

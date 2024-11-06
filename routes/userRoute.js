@@ -20,13 +20,17 @@ router.post("/login", userController.loginUser);
 router.post("/logout", userController.logoutUser);
 
 // Put
-router.put("/description", verifyToken, userController.updateUserDescription);
 router.put(
-  "/profileImage",
+  "/description/:userId",
+  verifyToken,
+  userController.updateUserDescription
+);
+router.put(
+  "/profileImage/:userId",
   verifyToken,
   upload.single("profileImage"),
   userController.updateUserProfileImage
 );
-router.put("/location", verifyToken, userController.updateUserLocation);
+router.put("/location/:userId", verifyToken, userController.updateUserLocation);
 
 module.exports = router;

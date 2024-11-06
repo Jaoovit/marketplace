@@ -33,7 +33,11 @@ router.put(
 );
 
 // Delete
-router.delete("/advertisement/:id", verifyToken, adsController.deleteAdById);
+router.delete(
+  "/advertisement/:id/:userId",
+  verifyToken,
+  adsController.deleteAdById
+);
 router.delete(
   "/advertisements/:userId",
   verifyToken,

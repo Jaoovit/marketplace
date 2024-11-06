@@ -76,7 +76,7 @@ const registerUser = async (req, res) => {
       try {
         const uploadResult = await new Promise((resolve, reject) => {
           cloudinary.uploader
-            .upload_stream({ resource_type: "auto" }, (error, result) => {
+            .upload_stream({ resource_type: "image" }, (error, result) => {
               if (error) return reject(error);
               resolve(result);
             })
@@ -177,10 +177,10 @@ const updateUserDescription = async (req, res) => {
       return res.status(400).json({ message: "New description is required" });
     }
 
-    const userId = req.session.passport?.user;
+    const userId = parseInt(req.params.userId, 10);
 
-    if (!userId) {
-      return res.status(400).json({ message: "User ID not found in session" });
+    if (isNaN(userId)) {
+      return res.status(400).send({ message: "Invalid user id" });
     }
 
     const userExists = await prisma.user.findUnique({
@@ -212,10 +212,10 @@ const updateUserDescription = async (req, res) => {
 
 const updateUserProfileImage = async (req, res) => {
   try {
-    const userId = req.session.passport?.user;
+    const userId = parseInt(req.params.userId, 10);
 
-    if (!userId) {
-      return res.status(400).json({ message: "User ID not found in session" });
+    if (isNaN(userId)) {
+      return res.status(400).send({ message: "Invalid user id" });
     }
 
     const userExists = await prisma.user.findUnique({
@@ -235,7 +235,7 @@ const updateUserProfileImage = async (req, res) => {
     try {
       const uploadResult = await new Promise((resolve, reject) => {
         cloudinary.uploader
-          .upload_stream({ resource_type: "auto" }, (error, result) => {
+          .upload_stream({ resource_type: "image" }, (error, result) => {
             if (error) return reject(error);
             resolve(result);
           })
@@ -276,10 +276,10 @@ const updateUserLocation = async (req, res) => {
       return res.status(400).json({ message: "New location is required" });
     }
 
-    const userId = req.session.passport?.user;
+    const userId = parseInt(req.params.userId, 10);
 
-    if (!userId) {
-      return res.status(400).json({ message: "User ID not found in session" });
+    if (isNaN(userId)) {
+      return res.status(400).send({ message: "Invalid user id" });
     }
 
     const userExists = await prisma.user.findUnique({

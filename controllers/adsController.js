@@ -139,6 +139,12 @@ const postAd = async (req, res) => {
     const { title, description } = req.body;
     const images = req.files;
 
+    if (images.length > 5) {
+      return res
+        .status(400)
+        .json({ message: "You can upload a maximum of 5 images" });
+    }
+
     if (!title || !description) {
       return res.status(400).json({ message: "All fields are required" });
     }

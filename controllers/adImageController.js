@@ -29,12 +29,25 @@ const addImagetoAd = async (req, res) => {
     return res.status(400).json({ message: "At least one image is required" });
   }
 
+  if (image.length > 1) {
+    return res
+      .status(400)
+      .json({ message: "You only can upload an image at a time" });
+  }
+
   try {
     const ad = await prisma.ads.findUnique({
-      where: {
-        id: adId,
-      },
+      where: { id: adId },
+      include: { images: true },
     });
+
+    const adImagesLenght = ad.images.length;
+
+    if (adImagesLenght > 4) {
+      return res
+        .status(401)
+        .json({ message: "You can add only 5 images for advertisement" });
+    }
 
     if (!ad) {
       return res

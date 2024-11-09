@@ -85,10 +85,7 @@ const searchAds = async (req, res) => {
   try {
     const advertisements = await prisma.ads.findMany({
       where: {
-        OR: [
-          { title: { contains: query, mode: "insensitive" } },
-          { description: { contains: query, mode: "insensitive" } },
-        ],
+        OR: [{ title: { contains: query, mode: "insensitive" } }],
       },
       orderBy: {
         createdAt: "desc",

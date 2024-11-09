@@ -113,6 +113,7 @@ const searchAds = async (req, res) => {
 
 const postAd = async (req, res) => {
   const userId = parseInt(req.params.id, 10);
+
   try {
     if (isNaN(userId)) {
       return res.status(400).send({ message: "Invalid user id" });
@@ -120,10 +121,19 @@ const postAd = async (req, res) => {
 
     const userExists = await prisma.user.findUnique({
       where: { id: userId },
+      include: { ads: true },
     });
 
     if (!userExists) {
       return res.status(404).json({ message: "User not found" });
+    }
+
+    const userAdsLength = userExists.ads.length;
+
+    if (userAdsLength > 4) {
+      return res
+        .status(401)
+        .json({ message: "You can't create more them 5 advertisements" });
     }
 
     const { title, description } = req.body;

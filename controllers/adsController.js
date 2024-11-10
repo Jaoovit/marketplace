@@ -87,6 +87,9 @@ const searchAds = async (req, res) => {
       where: {
         OR: [{ title: { contains: query, mode: "insensitive" } }],
       },
+      include: {
+        images: true,
+      },
       orderBy: {
         createdAt: "desc",
       },
